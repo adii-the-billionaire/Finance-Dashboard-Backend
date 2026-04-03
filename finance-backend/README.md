@@ -2,6 +2,25 @@
 
 Node.js backend for a finance dashboard: **REST** and **GraphQL** APIs, **MongoDB** persistence (Mongoose), **role-based access control**, validation (Zod), and **mock bearer-token authentication** suitable for local development.
 
+## Live deployment links (submission)
+
+> **Update this block** if you change Render service name or GitHub repo.
+
+| Resource | URL |
+|----------|-----|
+| **GitHub** | https://github.com/adii-the-billionaire/Finance-Dashboard-Backend |
+| **API base** | https://finance-dashboard-backend-30yg.onrender.com |
+| **Health** | https://finance-dashboard-backend-30yg.onrender.com/health |
+| **Root / API index** | https://finance-dashboard-backend-30yg.onrender.com/ |
+| **REST** | https://finance-dashboard-backend-30yg.onrender.com/api/v1 |
+| **Swagger UI** | https://finance-dashboard-backend-30yg.onrender.com/api-docs |
+| **OpenAPI JSON** | https://finance-dashboard-backend-30yg.onrender.com/openapi.json |
+| **GraphQL (POST)** | https://finance-dashboard-backend-30yg.onrender.com/graphql |
+
+**Demo login (after seed):** `POST /api/v1/auth/login` with `{"email":"admin@seed.local"}` → use returned `token` as `Authorization: Bearer …`.
+
+---
+
 ## Directory layout
 
 ```
@@ -145,19 +164,11 @@ Use any Node host (Render, Railway, Fly.io, etc.) plus a **cloud MongoDB** (e.g.
    - `MOCK_JWT_SECRET` = long random string (required for signing tokens in production)  
    - `NODE_ENV` = `production` (enables `trust proxy` behind the load balancer)
 3. **After first deploy:** Open **Render Shell** (or your host’s equivalent) and run `node src/scripts/seed.js` once so demo users exist (same emails as local, e.g. `admin@seed.local`).
-4. **Links to submit** (replace with your real base URL, e.g. `https://finance-dashboard-api.onrender.com`):
-
-| What | URL pattern |
-|------|----------------|
-| **API base** | `https://YOUR-HOST` |
-| **Swagger UI** | `https://YOUR-HOST/api-docs` |
-| **OpenAPI JSON** | `https://YOUR-HOST/openapi.json` |
-| **GraphQL** | `https://YOUR-HOST/graphql` (use Apollo Sandbox, Insomnia, or `curl`) |
-| **Health** | `https://YOUR-HOST/health` |
+4. **Links to submit** — see **[Live deployment links](#live-deployment-links-submission)** at the top of this file (same URLs as repo root `README.md`).
 
 If this app lives inside the **monorepo** (`Project/finance-backend`), the Render Blueprint is **`render.yaml` in the repository root** (parent folder). You still must set **`MONGODB_URI`** in the Render dashboard after the service is created.
 
-**Postman:** Import → **Link** → paste `https://YOUR-HOST/openapi.json`, or download the file from `/openapi.json` and import as OpenAPI 3.
+**Postman:** Import → **Link** → paste your **`/openapi.json`** URL from the table above.
 
 ## Tradeoffs
 

@@ -4,6 +4,35 @@ Backend assignment code lives in **`finance-backend/`**. This repository root al
 
 ---
 
+## Live links (copy for assignment / submission)
+
+> **If your Render URL or repo changes**, edit the table below so links stay correct.
+
+| Resource | URL |
+|----------|-----|
+| **GitHub repository** | https://github.com/adii-the-billionaire/Finance-Dashboard-Backend |
+| **Deployed API (base)** | https://finance-dashboard-backend-30yg.onrender.com |
+| **Health check** | https://finance-dashboard-backend-30yg.onrender.com/health |
+| **API landing (JSON)** | https://finance-dashboard-backend-30yg.onrender.com/ |
+| **REST API prefix** | https://finance-dashboard-backend-30yg.onrender.com/api/v1 |
+| **Swagger / OpenAPI UI** | https://finance-dashboard-backend-30yg.onrender.com/api-docs |
+| **OpenAPI JSON (Postman import)** | https://finance-dashboard-backend-30yg.onrender.com/openapi.json |
+| **GraphQL endpoint** | https://finance-dashboard-backend-30yg.onrender.com/graphql |
+
+**Quick checks**
+
+```bash
+curl -s https://finance-dashboard-backend-30yg.onrender.com/health
+curl -s -X POST https://finance-dashboard-backend-30yg.onrender.com/api/v1/auth/login \
+  -H 'Content-Type: application/json' -d '{"email":"admin@seed.local"}'
+```
+
+**Postman:** Import from link → `https://finance-dashboard-backend-30yg.onrender.com/openapi.json`
+
+**GraphQL:** Use [Apollo Sandbox](https://studio.apollographql.com/sandbox/explorer) or Insomnia — endpoint URL: `https://finance-dashboard-backend-30yg.onrender.com/graphql` (POST, `Authorization: Bearer <token>` from login).
+
+---
+
 ## Go live on Render (step by step)
 
 I cannot log into your accounts for you. Do these on **your** machine and in **your** browser.
@@ -46,17 +75,7 @@ node src/scripts/seed.js
 
 ### 5. Test your public URL
 
-Replace `https://YOUR-SERVICE.onrender.com` with the URL Render shows:
-
-```bash
-curl -s https://YOUR-SERVICE.onrender.com/health
-curl -s -X POST https://YOUR-SERVICE.onrender.com/api/v1/auth/login \
-  -H 'Content-Type: application/json' \
-  -d '{"email":"admin@seed.local"}'
-```
-
-- **Swagger:** `https://YOUR-SERVICE.onrender.com/api-docs`
-- **OpenAPI JSON:** `https://YOUR-SERVICE.onrender.com/openapi.json`
+Use the **Live links** table at the top of this README (or your Render dashboard URL if it differs).
 
 ---
 
