@@ -1,0 +1,325 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Finance Dashboard API",
+    "version": "1.0.0",
+    "description": "REST API for finance records, RBAC, and dashboard summaries. GraphQL is available at `POST /graphql` (see README). Auth: obtain a token via `/api/v1/auth/login`, then send `Authorization: Bearer <token>`."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Same host as this documentation page (works for local and deployed)"
+    }
+  ],
+  "tags": [
+    { "name": "Health" },
+    { "name": "Auth" },
+    { "name": "Users", "description": "Admin only" },
+    { "name": "Records" },
+    { "name": "Dashboard" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "mock-signed-token",
+        "description": "Paste the `token` value from POST /api/v1/auth/login"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" },
+          "details": {},
+          "issues": {}
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email"],
+        "properties": { "email": { "type": "string", "format": "email" } }
+      },
+      "AuthPayload": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" },
+          "user": { "$ref": "#/components/schemas/User" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string" },
+          "displayName": { "type": "string" },
+          "role": { "type": "string", "enum": ["VIEWER", "ANALYST", "ADMIN"] },
+          "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateUser": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "displayName": { "type": "string" },
+          "role": { "type": "string", "enum": ["VIEWER", "ANALYST", "ADMIN"] },
+          "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"] }
+        }
+      },
+      "FinancialRecord": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "amount": { "type": "number" },
+          "type": { "type": "string", "enum": ["income", "expense"] },
+          "category": { "type": "string" },
+          "date": { "type": "string", "format": "date-time" },
+          "notes": { "type": "string" },
+          "createdBy": { "type": "object", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "FinancialRecordInput": {
+        "type": "object",
+        "required": ["amount", "type", "category", "date"],
+        "properties": {
+          "amount": { "type": "number", "exclusiveMinimum": 0 },
+          "type": { "type": "string", "enum": ["income", "expense"] },
+          "category": { "type": "string" },
+          "date": { "type": "string", "format": "date-time" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object", "properties": { "ok": { "type": "boolean" } } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Mock login (returns bearer token)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token issued",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AuthPayload" } }
+            }
+          },
+          "401": { "description": "Invalid credentials" },
+          "403": { "description": "Inactive user" }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "List users (admin)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": { "type": "array", "items": { "$ref": "#/components/schemas/User" } }
+                  }
+                }
+              }
+            }
+          },
+          "403": { "description": "Forbidden" }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Create user (admin)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/CreateUser" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } },
+          "409": { "description": "Duplicate email" }
+        }
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Get user (admin)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } },
+          "404": { "description": "Not found" }
+        }
+      },
+      "patch": {
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Update user (admin)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "displayName": { "type": "string" },
+                  "role": { "type": "string", "enum": ["VIEWER", "ANALYST", "ADMIN"] },
+                  "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }
+        }
+      }
+    },
+    "/api/v1/records": {
+      "get": {
+        "tags": ["Records"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "List records (analyst/admin; not viewer)",
+        "parameters": [
+          { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["income", "expense"] } },
+          { "name": "category", "in": "query", "schema": { "type": "string" } },
+          { "name": "dateFrom", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+          { "name": "dateTo", "in": "query", "schema": { "type": "string", "format": "date-time" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": { "type": "array", "items": { "$ref": "#/components/schemas/FinancialRecord" } },
+                    "page": { "type": "integer" },
+                    "limit": { "type": "integer" },
+                    "total": { "type": "integer" },
+                    "totalPages": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Records"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Create record (admin)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/FinancialRecordInput" } }
+          }
+        },
+        "responses": {
+          "201": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FinancialRecord" } } } }
+        }
+      }
+    },
+    "/api/v1/records/{id}": {
+      "get": {
+        "tags": ["Records"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Get record (analyst/admin)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FinancialRecord" } } } },
+          "404": { "description": "Not found" }
+        }
+      },
+      "patch": {
+        "tags": ["Records"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Update record (admin)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "allOf": [{ "$ref": "#/components/schemas/FinancialRecordInput" }], "required": [] }
+            }
+          }
+        },
+        "responses": {
+          "200": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FinancialRecord" } } } }
+        }
+      },
+      "delete": {
+        "tags": ["Records"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Soft-delete record (admin)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "id": { "type": "string" }, "deleted": { "type": "boolean" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/summary": {
+      "get": {
+        "tags": ["Dashboard"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Dashboard aggregates (all authenticated roles)",
+        "parameters": [
+          { "name": "recentLimit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 50 } },
+          {
+            "name": "trendGranularity",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["weekly", "monthly"] }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Summary JSON (totals, categoryBreakdown, recentActivity, trends)" }
+        }
+      }
+    }
+  }
+}
