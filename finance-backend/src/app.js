@@ -55,9 +55,10 @@ export async function createApp() {
     });
   });
 
+  // swaggerUi.serve is an array of middleware — must be spread for Express
   app.use(
     '/api-docs',
-    swaggerUi.serve,
+    ...swaggerUi.serve,
     swaggerUi.setup(openApiSpec, {
       customSiteTitle: 'Finance Dashboard API',
       customCss: '.swagger-ui .topbar { display: none }',
