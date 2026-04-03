@@ -19,6 +19,31 @@ Backend assignment code lives in **`finance-backend/`**. This repository root al
 | **OpenAPI JSON (Postman import)** | https://finance-dashboard-backend-30yg.onrender.com/openapi.json |
 | **GraphQL endpoint** | https://finance-dashboard-backend-30yg.onrender.com/graphql |
 
+### All URL path slugs (append to base URL)
+
+Assume **base** = `https://finance-dashboard-backend-30yg.onrender.com`. **Auth:** send `Authorization: Bearer <token>` except where noted.
+
+| Slug | Method | Auth | Purpose |
+|------|--------|------|---------|
+| `/` | GET | No | API index JSON (links to main paths) |
+| `/health` | GET | No | Liveness + `database` connected/disconnected |
+| `/api-docs` | GET | No | **Swagger UI** (interactive REST docs) |
+| `/openapi.json` | GET | No | OpenAPI 3 spec (Postman / codegen) |
+| `/graphql` | POST | Optional* | **GraphQL** (*required for protected ops) |
+| `/api/v1/auth/login` | POST | No | Mock login; body `{"email":"..."}` → `token` |
+| `/api/v1/users` | GET | Admin | List users |
+| `/api/v1/users` | POST | Admin | Create user |
+| `/api/v1/users/:id` | GET | Admin | Get one user |
+| `/api/v1/users/:id` | PATCH | Admin | Update user |
+| `/api/v1/records` | GET | Analyst/Admin | List records (query: `type`, `category`, `dateFrom`, `dateTo`, `page`, `limit`) |
+| `/api/v1/records` | POST | Admin | Create record |
+| `/api/v1/records/:id` | GET | Analyst/Admin | Get one record |
+| `/api/v1/records/:id` | PATCH | Admin | Update record |
+| `/api/v1/records/:id` | DELETE | Admin | Soft-delete record |
+| `/api/v1/dashboard/summary` | GET | Any role† | Dashboard aggregates (query: `recentLimit`, `trendGranularity`) |
+
+† **VIEWER** can use dashboard only; **cannot** use `/records` routes. **ANALYST** read-only on records.
+
 **Quick checks**
 
 ```bash

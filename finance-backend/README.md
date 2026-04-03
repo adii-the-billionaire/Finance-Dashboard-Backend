@@ -19,6 +19,31 @@ Node.js backend for a finance dashboard: **REST** and **GraphQL** APIs, **MongoD
 
 **Demo login (after seed):** `POST /api/v1/auth/login` with `{"email":"admin@seed.local"}` → use returned `token` as `Authorization: Bearer …`.
 
+### All path slugs (relative paths)
+
+Use **live** URLs from the table above, or locally: `http://localhost:4000` + slug. **Auth:** `Authorization: Bearer <token>` unless noted.
+
+| Slug | Method | Auth | Purpose |
+|------|--------|------|---------|
+| `/` | GET | — | API index JSON (`health`, `api-docs`, `openapi.json`, `api/v1`, `graphql`) |
+| `/health` | GET | — | Health: `{ ok, database }` |
+| `/api-docs` | GET | — | **Swagger UI** |
+| `/openapi.json` | GET | — | OpenAPI 3 JSON |
+| `/graphql` | POST | Optional* | GraphQL (*token for protected queries/mutations) |
+| `/api/v1/auth/login` | POST | — | Body `{"email"}` → `{ token, user }` |
+| `/api/v1/users` | GET | Admin | List users |
+| `/api/v1/users` | POST | Admin | Create user |
+| `/api/v1/users/:id` | GET | Admin | Get user |
+| `/api/v1/users/:id` | PATCH | Admin | Update user |
+| `/api/v1/records` | GET | Analyst/Admin | List + filters: `type`, `category`, `dateFrom`, `dateTo`, `page`, `limit` |
+| `/api/v1/records` | POST | Admin | Create financial record |
+| `/api/v1/records/:id` | GET | Analyst/Admin | Get record |
+| `/api/v1/records/:id` | PATCH | Admin | Update record |
+| `/api/v1/records/:id` | DELETE | Admin | Soft delete |
+| `/api/v1/dashboard/summary` | GET | Viewer+ | Totals, categories, recent activity, trends; query: `recentLimit`, `trendGranularity` |
+
+**RBAC:** **VIEWER** → only `/dashboard/summary` (not `/records`). **ANALYST** → read records + dashboard. **ADMIN** → users + full record CRUD + dashboard.
+
 ---
 
 ## Directory layout
