@@ -23,9 +23,7 @@ async function main() {
 
   await Promise.all([
     startGraphQLAndFallbacks(app, apollo),
-    connectDatabase()
-      .then(() => console.log('MongoDB connected'))
-      .catch((err) =>
+    connectDatabase().catch((err) =>
         console.error(
           'MongoDB connection failed — fix Atlas / MONGODB_URI; /health still works:',
           err.message

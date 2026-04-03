@@ -1,0 +1,11 @@
+{
+  "name": "finance-dashboard-root",
+  "private": true,
+  "description": "Run npm scripts from repo root without cd finance-backend",
+  "scripts": {
+    "seed": "npm run seed --prefix finance-backend",
+    "start": "npm start --prefix finance-backend",
+    "dev": "npm run dev --prefix finance-backend",
+    "ping-db": "npm run ping-db --prefix finance-backend"
+  }
+}

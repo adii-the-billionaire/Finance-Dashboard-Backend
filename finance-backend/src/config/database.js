@@ -23,6 +23,9 @@ export async function connectDatabase(options = {}) {
       if (attempt > 1) {
         console.log(`MongoDB connected on attempt ${attempt}`);
       }
+      console.log(
+        `MongoDB connected (database: ${mongoose.connection.db?.databaseName ?? '?'})`
+      );
       return mongoose.connection;
     } catch (err) {
       lastErr = err;
