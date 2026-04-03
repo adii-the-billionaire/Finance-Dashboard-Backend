@@ -1,9 +1,9 @@
 import { env } from './config/env.js';
 import { connectDatabase } from './config/database.js';
-import { createApp } from './app.js';
+import { createApp, startGraphQLAndFallbacks } from './app.js';
 
 async function main() {
-  const { httpServer } = await createApp();
+  const { app, httpServer, apollo } = createApp();
 
   const listenHost = env.nodeEnv === 'production' ? '0.0.0.0' : '127.0.0.1';
 
@@ -18,12 +18,17 @@ async function main() {
     });
   });
 
-  try {
-    await connectDatabase();
-    console.log('MongoDB connected');
-  } catch (err) {
-    console.error('MongoDB connection failed — fix Atlas / MONGODB_URI; /health still works:', err.message);
-  }
+  await Promise.all([
+    startGraphQLAndFallbacks(app, apollo),
+    connectDatabase()
+      .then(() => console.log('MongoDB connected'))
+      .catch((err) =>
+        console.error(
+          'MongoDB connection failed — fix Atlas / MONGODB_URI; /health still works:',
+          err.message
+        )
+      ),
+  ]);
 }
 
 main().catch((err) => {

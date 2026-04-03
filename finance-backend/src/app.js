@@ -23,7 +23,11 @@ const openApiSpec = JSON.parse(
   readFileSync(join(__dirname, 'docs', 'openapi.json'), 'utf8')
 );
 
-export async function createApp() {
+/**
+ * Builds HTTP app + Apollo instance. Does NOT call apollo.start() — call
+ * startGraphQLAndFallbacks() after listen() so /health works during slow Apollo init (e.g. Render).
+ */
+export function createApp() {
   const app = express();
   const httpServer = http.createServer(app);
 
@@ -92,6 +96,10 @@ export async function createApp() {
     },
   });
 
+  return { app, httpServer, apollo };
+}
+
+export async function startGraphQLAndFallbacks(app, apollo) {
   await apollo.start();
   app.use(
     '/graphql',
@@ -102,6 +110,4 @@ export async function createApp() {
 
   app.use(notFoundHandler);
   app.use(errorHandler);
-
-  return { app, httpServer };
 }
