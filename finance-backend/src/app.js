@@ -15,6 +15,7 @@ import { resolvers } from './graphql/resolvers.js';
 import { createGraphQLContext } from './graphql/context.js';
 import { ZodError } from 'zod';
 import { AppError } from './errors/AppError.js';
+import mongoose from 'mongoose';
 import { env } from './config/env.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -34,7 +35,11 @@ export async function createApp() {
   app.use(express.json({ limit: '1mb' }));
 
   app.get('/health', (_req, res) => {
-    res.json({ ok: true });
+    const dbConnected = mongoose.connection.readyState === 1;
+    res.json({
+      ok: true,
+      database: dbConnected ? 'connected' : 'disconnected',
+    });
   });
 
   app.get('/', (_req, res) => {
