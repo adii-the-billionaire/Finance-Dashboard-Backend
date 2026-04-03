@@ -155,7 +155,7 @@ Use any Node host (Render, Railway, Fly.io, etc.) plus a **cloud MongoDB** (e.g.
 | **GraphQL** | `https://YOUR-HOST/graphql` (use Apollo Sandbox, Insomnia, or `curl`) |
 | **Health** | `https://YOUR-HOST/health` |
 
-A sample Render Blueprint is in `render.yaml` (you still must set `MONGODB_URI` in the dashboard).
+If this app lives inside the **monorepo** (`Project/finance-backend`), the Render Blueprint is **`render.yaml` in the repository root** (parent folder). You still must set **`MONGODB_URI`** in the Render dashboard after the service is created.
 
 **Postman:** Import → **Link** → paste `https://YOUR-HOST/openapi.json`, or download the file from `/openapi.json` and import as OpenAPI 3.
 

@@ -1,0 +1,18 @@
+# Blueprint for https://render.com — repo root is this folder; app lives in finance-backend/
+# After first deploy: set MONGODB_URI in the Render dashboard (Atlas URI with /finance_dashboard in path).
+# Then run once in Render Shell: node src/scripts/seed.js (cwd is finance-backend when using rootDir)
+services:
+  - type: web
+    name: finance-dashboard-api
+    runtime: node
+    rootDir: finance-backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: MOCK_JWT_SECRET
+        generateValue: true
