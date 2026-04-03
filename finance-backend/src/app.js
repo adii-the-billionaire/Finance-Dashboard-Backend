@@ -37,6 +37,19 @@ export async function createApp() {
     res.json({ ok: true });
   });
 
+  app.get('/', (_req, res) => {
+    res.json({
+      name: 'Finance Dashboard API',
+      endpoints: {
+        health: '/health',
+        apiDocs: '/api-docs',
+        openApiJson: '/openapi.json',
+        restBase: '/api/v1',
+        graphql: '/graphql',
+      },
+    });
+  });
+
   app.use(
     '/api-docs',
     swaggerUi.serve,
